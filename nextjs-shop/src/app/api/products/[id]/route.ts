@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { diContainer } from '@/inversify.config'
+import { diContainer } from '@/lib/inversify/inversify.config'
+import TYPES from '@/lib/inversify/symbol'
 import { IGetProductHandler } from '@/server/application/product/get/info/IGetProductHandler'
 import { Command } from '@/server/application/product/get/info/command'
 import { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 /**
  *  商品情報を取得

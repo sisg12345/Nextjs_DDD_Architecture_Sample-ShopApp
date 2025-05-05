@@ -1,7 +1,8 @@
 import { Container } from 'inversify'
-import { GetProductsHandler } from './server/application/product/get/category/getProductsHandler'
-import { IGetUserHandler } from './server/application/user/get/IGetUserHandler'
-import { GetUserHandler } from './server/application/user/get/getUserHandler'
+import { GetProductsHandler } from '../../server/application/product/get/category/getProductsHandler'
+import { IGetUserHandler } from '../../server/application/user/get/IGetUserHandler'
+import { GetUserHandler } from '../../server/application/user/get/getUserHandler'
+import TYPES from '@/lib/inversify/symbol'
 import { ICreateProductOrderHandler } from '@/server/application/product/create/order/ICreateProductOrderHandler'
 import { CreateProductOrderHandler } from '@/server/application/product/create/order/createProductOrderHandler'
 import { ICreateProductHandler } from '@/server/application/product/create/register/ICreateProductHandler'
@@ -21,7 +22,6 @@ import { ProductService } from '@/server/domain/services/productService'
 import { UserService } from '@/server/domain/services/userService'
 import { ProductRepository } from '@/server/infrastructure/repositories/product/productRepository'
 import { UserRepository } from '@/server/infrastructure/repositories/user/userRepository'
-import TYPES from '@/types/symbol'
 
 /**
  * DIコンテナの設定

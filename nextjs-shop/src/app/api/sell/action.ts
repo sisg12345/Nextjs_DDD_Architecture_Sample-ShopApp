@@ -2,12 +2,12 @@
 
 import { redirect } from 'next/navigation'
 import type { FileData } from '@/components/molecules/Images/InputImages'
-import { diContainer } from '@/inversify.config'
 import authGuard from '@/lib/auth/authGuard'
+import { diContainer } from '@/lib/inversify/inversify.config'
+import TYPES from '@/lib/inversify/symbol'
 import { Command } from '@/server/application/product/create/register/command'
 import { CreateProductHandler } from '@/server/application/product/create/register/createProductHandler'
 import type { Product, ProductCategory, ProductCondition, ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 // 商品出品フォーム
 export type ProductFormData = {

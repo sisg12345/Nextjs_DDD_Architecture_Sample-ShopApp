@@ -4,13 +4,13 @@ import { inject, injectable } from 'inversify'
 import { ICreateProductOrderHandler } from './ICreateProductOrderHandler'
 import { Command } from './command'
 import { MESSAGE } from '@/constants'
+import TYPES from '@/lib/inversify/symbol'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
 import { IProductService } from '@/server/domain/interfaces/services/IProductService'
 import { ProductService } from '@/server/domain/services/productService'
 import { log } from '@/server/shared/decorators/log'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import type { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 @injectable()
 export class CreateProductOrderHandler implements ICreateProductOrderHandler {

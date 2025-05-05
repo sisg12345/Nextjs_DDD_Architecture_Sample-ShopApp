@@ -1,11 +1,11 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { diContainer } from '@/inversify.config'
+import { diContainer } from '@/lib/inversify/inversify.config'
+import TYPES from '@/lib/inversify/symbol'
 import { ICreateUserHandler } from '@/server/application/user/create/ICreateUserHandler'
 import { Command } from '@/server/application/user/create/command'
 import type { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 /**
  * サインアップフォーム

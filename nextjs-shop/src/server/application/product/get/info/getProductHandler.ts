@@ -2,6 +2,7 @@ import 'server-only'
 
 import { inject, injectable } from 'inversify'
 import { Command } from './command'
+import TYPES from '@/lib/inversify/symbol'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
 import { IGetProductHandler } from '@/server/application/product/get/info/IGetProductHandler'
 import { ProductInfoEntity } from '@/server/domain/entities/productInfoEntity'
@@ -10,7 +11,6 @@ import { log } from '@/server/shared/decorators/log'
 import { NotFoundError } from '@/server/shared/errors/notFoundError'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import type { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 @injectable()
 export class GetProductHandler implements IGetProductHandler {

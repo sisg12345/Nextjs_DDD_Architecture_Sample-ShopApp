@@ -3,6 +3,7 @@ import 'server-only'
 import { inject, injectable } from 'inversify'
 import { IGetUserHandler } from './IGetUserHandler'
 import { Command } from './command'
+import TYPES from '@/lib/inversify/symbol'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
 import { UserEntity } from '@/server/domain/entities/userEntity'
 import { IUserRepository } from '@/server/domain/interfaces/repositories/IUserRepository'
@@ -10,7 +11,6 @@ import { log } from '@/server/shared/decorators/log'
 import { NotFoundError } from '@/server/shared/errors/notFoundError'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 @injectable()
 export class GetUserHandler implements IGetUserHandler {

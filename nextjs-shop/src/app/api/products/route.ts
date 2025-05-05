@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { diContainer } from '@/inversify.config'
+import { diContainer } from '@/lib/inversify/inversify.config'
+import TYPES from '@/lib/inversify/symbol'
 import { Command } from '@/server/application/product/get/category/command'
 import { GetProductsHandler } from '@/server/application/product/get/category/getProductsHandler'
 import type { ProductCategory, ProductCondition, ResponseResult } from '@/types'
 import type { OrderBy } from '@/types/database'
-import TYPES from '@/types/symbol'
 
 /**
  * カテゴリーの商品を取得

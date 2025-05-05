@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { diContainer } from '@/inversify.config'
+import { diContainer } from '@/lib/inversify/inversify.config'
+import TYPES from '@/lib/inversify/symbol'
 import { Command } from '@/server/application/user/get/command'
 import { GetUserHandler } from '@/server/application/user/get/getUserHandler'
 import { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 /**
  * ユーザー取得

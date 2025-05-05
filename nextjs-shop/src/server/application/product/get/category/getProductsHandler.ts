@@ -3,13 +3,13 @@ import 'server-only'
 import { inject, injectable } from 'inversify'
 import { IGetProductsHandler } from './IGetProductsHandler'
 import { Command } from './command'
+import TYPES from '@/lib/inversify/symbol'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
 import { ProductEntity } from '@/server/domain/entities/productEntity'
 import { IProductRepository } from '@/server/domain/interfaces/repositories/IProductRepository'
 import { log } from '@/server/shared/decorators/log'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import type { ResponseResult } from '@/types'
-import TYPES from '@/types/symbol'
 
 @injectable()
 export class GetProductsHandler implements IGetProductsHandler {
