@@ -2,12 +2,12 @@
 
 import { redirect } from 'next/navigation'
 import type { FileData } from '@/components/molecules/Images/InputImages'
+import { diContainer } from '@/inversify.config'
 import authGuard from '@/lib/auth/authGuard'
 import { Command } from '@/server/application/product/create/register/command'
 import { CreateProductHandler } from '@/server/application/product/create/register/createProductHandler'
-import { ProductService } from '@/server/domain/services/productService'
-import { ProductRepository } from '@/server/infrastructure/repositories/product/productRepository'
 import type { Product, ProductCategory, ProductCondition, ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
 // 商品出品フォーム
 export type ProductFormData = {
@@ -49,12 +49,11 @@ export async function registerProduct(
     formData.description,
   )
 
+  // DI
+  const createProductHandler = diContainer.get<CreateProductHandler>(TYPES.ICreateProductHandler)
   // ユースケース実行
-  const { status, success, message, errors }: ResponseResult = await new CreateProductHandler(
-    inputData,
-    new ProductService(),
-    new ProductRepository(),
-  ).handle()
+  const { status, success, message, errors }: ResponseResult =
+    await createProductHandler.handle(inputData)
 
   // エラーが存在する場合
   if (!success) {

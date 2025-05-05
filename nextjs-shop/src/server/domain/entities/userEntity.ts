@@ -8,7 +8,7 @@ import type { User } from '@/types'
  */
 export class UserEntity {
   /** ユーザーID */
-  readonly #id: User['id']
+  readonly #id: User['id'] | null
   /** パスワード */
   #password: string
   /** メールアドレス */
@@ -23,7 +23,7 @@ export class UserEntity {
   #profileImageUrl: string
 
   private constructor(
-    id: User['id'],
+    id: User['id'] | null,
     password: string,
     email: string,
     username: string,
@@ -44,7 +44,7 @@ export class UserEntity {
    * ファクトリメソッド: 新規作成用
    */
   static create(
-    id: User['id'],
+    id: User['id'] | null,
     password: string,
     email: string,
     username: string,

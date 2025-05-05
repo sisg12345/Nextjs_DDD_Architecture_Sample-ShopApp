@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { injectable } from 'inversify'
 import prisma from '@/lib/prisma'
 import { ProductEntity } from '@/server/domain/entities/productEntity'
 import { ProductInfoEntity } from '@/server/domain/entities/productInfoEntity'
@@ -11,6 +12,7 @@ import type { OrderBy } from '@/types/database'
 /**
  * 商品レポジトリクラス
  */
+@injectable()
 export class ProductRepository implements IProductRepository {
   /**
    *  商品を保存

@@ -2,12 +2,12 @@
 
 import { redirect } from 'next/navigation'
 import type { FileData } from '@/components/molecules/Images/InputImages'
+import { diContainer } from '@/inversify.config'
 import authGuard from '@/lib/auth/authGuard'
 import { Command } from '@/server/application/user/update/command'
 import { UpdateUserHandler } from '@/server/application/user/update/updateUserHandler'
-import { UserService } from '@/server/domain/services/userService'
-import { UserRepository } from '@/server/infrastructure/repositories/user/userRepository'
 import type { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
 /**
  * ユーザープロフィールフォーム
@@ -54,12 +54,11 @@ export async function updateUserProfile(
     formData.description,
   )
 
+  // DI
+  const updateUserHandler = diContainer.get<UpdateUserHandler>(TYPES.IUpdateUserHandler)
   // ユースケース実行
-  const { status, success, message, errors }: ResponseResult = await new UpdateUserHandler(
-    inputData,
-    new UserService(),
-    new UserRepository(),
-  ).handle()
+  const { status, success, message, errors }: ResponseResult =
+    await updateUserHandler.handle(inputData)
 
   // エラーが存在する場合
   if (!success) {

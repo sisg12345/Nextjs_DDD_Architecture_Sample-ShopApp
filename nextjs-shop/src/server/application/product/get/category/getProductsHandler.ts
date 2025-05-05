@@ -1,21 +1,26 @@
 import 'server-only'
 
+import { inject, injectable } from 'inversify'
+import { IGetProductsHandler } from './IGetProductsHandler'
 import { Command } from './command'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
 import { ProductEntity } from '@/server/domain/entities/productEntity'
-import { ProductRepository } from '@/server/infrastructure/repositories/product/productRepository'
+import { IProductRepository } from '@/server/domain/interfaces/repositories/IProductRepository'
 import { log } from '@/server/shared/decorators/log'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import type { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
-export class GetProductsHandler {
-  constructor(
-    private readonly command: Command,
-    private readonly productRepository: ProductRepository,
-  ) {}
+@injectable()
+export class GetProductsHandler implements IGetProductsHandler {
+  readonly #productRepository: IProductRepository
+
+  constructor(@inject(TYPES.IProductRepository) productRepository: IProductRepository) {
+    this.#productRepository = productRepository
+  }
 
   @log
-  public async handle(): Promise<ResponseResult> {
+  public async handle(command: Command): Promise<ResponseResult> {
     // ステータスコード
     let status = 200
     // 処理結果
@@ -25,16 +30,16 @@ export class GetProductsHandler {
 
     try {
       // バリデーション実行
-      await this.validate(this.command)
+      await this.validate(command)
 
       // カテゴリー商品を取得
-      const result = await this.productRepository.findByCategory(
-        this.command.category,
-        this.command.condition,
-        this.command.page,
-        this.command.limit,
-        this.command.sort,
-        this.command.order,
+      const result = await this.#productRepository.findByCategory(
+        command.category,
+        command.condition,
+        command.page,
+        command.limit,
+        command.sort,
+        command.order,
       )
       data = result.map((entity) => entity.toPrimitives())
     } catch {

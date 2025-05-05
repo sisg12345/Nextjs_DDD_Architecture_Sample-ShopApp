@@ -1,21 +1,27 @@
 import 'server-only'
 
+import { inject, injectable } from 'inversify'
+import { ICreateProductOrderHandler } from './ICreateProductOrderHandler'
 import { Command } from './command'
 import { MESSAGE } from '@/constants'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
+import { IProductService } from '@/server/domain/interfaces/services/IProductService'
 import { ProductService } from '@/server/domain/services/productService'
 import { log } from '@/server/shared/decorators/log'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import type { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
-export class CreateProductOrderHandler {
-  constructor(
-    private readonly command: Command,
-    private readonly productService: ProductService,
-  ) {}
+@injectable()
+export class CreateProductOrderHandler implements ICreateProductOrderHandler {
+  readonly #productService: ProductService
+
+  constructor(@inject(TYPES.IProductService) productService: IProductService) {
+    this.#productService = productService
+  }
 
   @log
-  public async handler(): Promise<ResponseResult> {
+  public async handler(command: Command): Promise<ResponseResult> {
     // ステータスコード
     let status = 200
     // 処理結果
@@ -25,10 +31,10 @@ export class CreateProductOrderHandler {
 
     try {
       // バリデーション実行
-      await this.validate(this.command)
+      await this.validate(command)
 
       // 商品注文を確定
-      await this.productService.orderProduct(this.command.productId)
+      await this.#productService.orderProduct(command.productId)
       // 完了メッセージ
       message = MESSAGE.complete.order
     } catch (error: unknown) {

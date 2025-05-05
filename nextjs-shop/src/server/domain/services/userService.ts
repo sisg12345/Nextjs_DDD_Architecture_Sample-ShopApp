@@ -1,6 +1,7 @@
 import 'server-only'
 
 import bcrypt from 'bcryptjs'
+import { injectable } from 'inversify'
 import { IUserService } from '../interfaces/services/IUserService'
 import { log } from '@/server/shared/decorators/log'
 import { FileUploadError } from '@/server/shared/errors/fIleUpLoadError'
@@ -8,6 +9,7 @@ import { FileUploadError } from '@/server/shared/errors/fIleUpLoadError'
 /**
  * ユーザーサービスクラス
  */
+@injectable()
 export class UserService implements IUserService {
   /**
    * パスワードを暗号化

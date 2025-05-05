@@ -1,12 +1,11 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth/auth'
+import { diContainer } from '@/inversify.config'
+import { ICreateUserHandler } from '@/server/application/user/create/ICreateUserHandler'
 import { Command } from '@/server/application/user/create/command'
-import { CreateUserHandler } from '@/server/application/user/create/createUserHandler'
-import { UserService } from '@/server/domain/services/userService'
-import { UserRepository } from '@/server/infrastructure/repositories/user/userRepository'
 import type { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
 /**
  * サインアップフォーム
@@ -31,23 +30,14 @@ export default async function signup(
   prevState: unknown,
   formData: SignupFormData,
 ): Promise<ResponseResult | void> {
-  // セッション
-  const session = await auth()
-
   // ユースケースのインプットデータ
-  const inputData = new Command(
-    Number(session?.user?.id),
-    formData.email,
-    formData.password,
-    formData.passwordConfirm,
-  )
+  const inputData = new Command(formData.email, formData.password, formData.passwordConfirm)
 
+  // DI
+  const createUserHandler = diContainer.get<ICreateUserHandler>(TYPES.ICreateUserHandler)
   // ユースケース実行
-  const { status, success, message, errors }: ResponseResult = await new CreateUserHandler(
-    inputData,
-    new UserService(),
-    new UserRepository(),
-  ).handle()
+  const { status, success, message, errors }: ResponseResult =
+    await createUserHandler.handle(inputData)
 
   // エラーが存在する場合
   if (!success) {

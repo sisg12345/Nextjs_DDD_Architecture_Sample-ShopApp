@@ -1,26 +1,35 @@
 import 'server-only'
 
+import { inject, injectable } from 'inversify'
+import { IUpdateUserHandler } from './IUpdateUserHandler'
 import { Command } from './command'
 import { MESSAGE } from '@/constants'
 import { userProfileFormSchema } from '@/lib/services/users/validations'
 import yup from '@/lib/yup'
 import { UpdateUserDto } from '@/server/domain/dtos/updateUserDto'
-import { UserService } from '@/server/domain/services/userService'
-import { UserRepository } from '@/server/infrastructure/repositories/user/userRepository'
+import { IUserRepository } from '@/server/domain/interfaces/repositories/IUserRepository'
+import { IUserService } from '@/server/domain/interfaces/services/IUserService'
 import { log } from '@/server/shared/decorators/log'
 import { FileUploadError } from '@/server/shared/errors/fIleUpLoadError'
 import type { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 import { generateErrors, type ErrorMessages } from '@/utils/yupUtil'
 
-export class UpdateUserHandler {
+@injectable()
+export class UpdateUserHandler implements IUpdateUserHandler {
+  readonly #userService: IUserService
+  readonly #userRepository: IUserRepository
+
   constructor(
-    private readonly command: Command,
-    private readonly userService: UserService,
-    private readonly userRepository: UserRepository,
-  ) {}
+    @inject(TYPES.IUserService) userService: IUserService,
+    @inject(TYPES.IUserRepository) userRepository: IUserRepository,
+  ) {
+    this.#userService = userService
+    this.#userRepository = userRepository
+  }
 
   @log
-  public async handle(): Promise<ResponseResult> {
+  public async handle(command: Command): Promise<ResponseResult> {
     // ステータスコード
     let status = 200
     // 処理結果
@@ -32,27 +41,27 @@ export class UpdateUserHandler {
 
     try {
       // バリデーション実行
-      await this.validate(this.command)
+      await this.validate(command)
 
       // ユーザープロフィール画像アップロード
-      const profileImageUrl = await this.userService.fileUpload(this.command.images[0]?.file)
+      const profileImageUrl = await this.#userService.fileUpload(command.images[0]?.file)
       // ユーザー更新DTO
       const updateUserDto = new UpdateUserDto(
-        this.command.userId,
-        this.command.email,
-        this.command.username ?? '',
-        this.command.displayName ?? '',
-        this.command.description ?? '',
+        command.userId,
+        command.email,
+        command.username ?? '',
+        command.displayName ?? '',
+        command.description ?? '',
         profileImageUrl,
       )
       // ユーザー情報更新
-      this.userRepository.update(updateUserDto)
+      this.#userRepository.update(updateUserDto)
       // パスワードが変更された場合
-      if (this.command.newPassword) {
+      if (command.newPassword) {
         // パスワードハッシュ化
-        const newPassword = await this.userService.encryptPassword(this.command.newPassword)
+        const newPassword = await this.#userService.encryptPassword(command.newPassword)
         // パスワード更新
-        this.userRepository.updatePassword(this.command.userId, newPassword)
+        this.#userRepository.updatePassword(command.userId, newPassword)
       }
       // ユーザー登録DTO
     } catch (error: unknown) {

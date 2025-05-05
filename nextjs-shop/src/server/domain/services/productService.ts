@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { injectable } from 'inversify'
 import { IProductService } from '@/server/domain/interfaces/services/IProductService'
 import { log } from '@/server/shared/decorators/log'
 import { FileUploadError } from '@/server/shared/errors/fIleUpLoadError'
@@ -7,6 +8,7 @@ import { FileUploadError } from '@/server/shared/errors/fIleUpLoadError'
 /**
  * 商品サービスクラス
  */
+@injectable()
 export class ProductService implements IProductService {
   /**
    * 商品注文を確定

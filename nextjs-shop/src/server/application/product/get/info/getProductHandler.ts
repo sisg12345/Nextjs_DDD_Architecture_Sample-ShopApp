@@ -1,22 +1,27 @@
 import 'server-only'
 
+import { inject, injectable } from 'inversify'
 import { Command } from './command'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
+import { IGetProductHandler } from '@/server/application/product/get/info/IGetProductHandler'
 import { ProductInfoEntity } from '@/server/domain/entities/productInfoEntity'
-import { ProductRepository } from '@/server/infrastructure/repositories/product/productRepository'
+import { IProductRepository } from '@/server/domain/interfaces/repositories/IProductRepository'
 import { log } from '@/server/shared/decorators/log'
 import { NotFoundError } from '@/server/shared/errors/notFoundError'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import type { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
-export class GetProductHandler {
-  constructor(
-    private readonly command: Command,
-    private readonly productRepository: ProductRepository,
-  ) {}
+@injectable()
+export class GetProductHandler implements IGetProductHandler {
+  readonly #productRepository: IProductRepository
+
+  constructor(@inject(TYPES.IProductRepository) productRepository: IProductRepository) {
+    this.#productRepository = productRepository
+  }
 
   @log
-  public async handle(): Promise<ResponseResult> {
+  public async handle(command: Command): Promise<ResponseResult> {
     // ステータスコード
     let status = 200
     // 処理結果
@@ -26,10 +31,10 @@ export class GetProductHandler {
 
     try {
       // バリデーション実行
-      await this.validate(this.command)
+      await this.validate(command)
 
       // 商品を取得
-      const result = await this.productRepository.findInfoById(this.command.id)
+      const result = await this.#productRepository.findInfoById(command.id)
       // データが存在しない場合
       if (!result) {
         // Not Found エラー

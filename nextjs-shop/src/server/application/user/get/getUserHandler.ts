@@ -1,22 +1,27 @@
 import 'server-only'
 
+import { inject, injectable } from 'inversify'
+import { IGetUserHandler } from './IGetUserHandler'
 import { Command } from './command'
 import { ValidateInteger } from '@/server/application/common/validations/validationUtils'
 import { UserEntity } from '@/server/domain/entities/userEntity'
-import { UserRepository } from '@/server/infrastructure/repositories/user/userRepository'
+import { IUserRepository } from '@/server/domain/interfaces/repositories/IUserRepository'
 import { log } from '@/server/shared/decorators/log'
 import { NotFoundError } from '@/server/shared/errors/notFoundError'
 import { ValidationError } from '@/server/shared/errors/validationError'
 import { ResponseResult } from '@/types'
+import TYPES from '@/types/symbol'
 
-export class GetUserHandler {
-  constructor(
-    private readonly command: Command,
-    private readonly userRepository: UserRepository,
-  ) {}
+@injectable()
+export class GetUserHandler implements IGetUserHandler {
+  readonly #userRepository: IUserRepository
+
+  constructor(@inject(TYPES.IUserRepository) userRepository: IUserRepository) {
+    this.#userRepository = userRepository
+  }
 
   @log
-  public async handle(): Promise<ResponseResult> {
+  public async handle(command: Command): Promise<ResponseResult> {
     // ステータスコード
     let status = 200
     // 処理結果
@@ -27,10 +32,10 @@ export class GetUserHandler {
 
     try {
       // バリデーション実行
-      await this.validate(this.command)
+      await this.validate(command)
 
       // ユーザーを取得
-      const result = await this.userRepository.findById(this.command.userId)
+      const result = await this.#userRepository.findById(command.userId)
       // データが存在しない場合
       if (!result) {
         // Not Found エラー

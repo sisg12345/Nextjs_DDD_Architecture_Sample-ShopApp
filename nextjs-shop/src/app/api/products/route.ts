@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { diContainer } from '@/inversify.config'
 import { Command } from '@/server/application/product/get/category/command'
 import { GetProductsHandler } from '@/server/application/product/get/category/getProductsHandler'
-import { ProductRepository } from '@/server/infrastructure/repositories/product/productRepository'
 import type { ProductCategory, ProductCondition, ResponseResult } from '@/types'
 import type { OrderBy } from '@/types/database'
+import TYPES from '@/types/symbol'
 
 /**
  * カテゴリーの商品を取得
@@ -20,15 +21,13 @@ export async function GET(request: NextRequest) {
   const limit = searchParams.get('_limit')
   const sort = searchParams.get('_sort')?.split(',') ?? null
   const order = searchParams.get('_order')?.split(',') as OrderBy[]
-
   // ユースケースのインプットデータ
   const inputData = new Command(category, condition, page, limit, sort, order)
 
+  // DI
+  const getProductsHandler = diContainer.get<GetProductsHandler>(TYPES.IGetProductsHandler)
   // ユースケース実行
-  const result: ResponseResult = await new GetProductsHandler(
-    inputData,
-    new ProductRepository(),
-  ).handle()
+  const result: ResponseResult = await getProductsHandler.handle(inputData)
 
   // 結果返却
   return NextResponse.json(result, { status: result.status })

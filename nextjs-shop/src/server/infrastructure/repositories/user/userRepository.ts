@@ -1,6 +1,7 @@
 import 'server-only'
 
 import type { User as PrismaUser } from '@prisma/client'
+import { injectable } from 'inversify'
 import prisma from '@/lib/prisma'
 import { UpdateUserDto } from '@/server/domain/dtos/updateUserDto'
 import { UserEntity } from '@/server/domain/entities/userEntity'
@@ -8,6 +9,7 @@ import { IUserRepository } from '@/server/domain/interfaces/repositories/IUserRe
 import { log } from '@/server/shared/decorators/log'
 import type { User } from '@/types'
 
+@injectable()
 export class UserRepository implements IUserRepository {
   /**
    *  ユーザーを保存
@@ -16,8 +18,11 @@ export class UserRepository implements IUserRepository {
    */
   @log
   public async save(userEntity: UserEntity): Promise<void> {
+    // 一時的に使用するユーザーID、自動採番後に更新する
+    const tempUserId = 0
+
     // ユーザーを保存
-    await prisma.user.create({
+    const createUser = await prisma.user.create({
       data: {
         email: userEntity.email,
         password: userEntity.password,
@@ -25,17 +30,17 @@ export class UserRepository implements IUserRepository {
         displayName: userEntity.displayName,
         description: userEntity.description,
         profileImageUrl: userEntity.profileImageUrl,
-        updateUser: userEntity.id,
-        createUser: userEntity.id,
+        updateUser: tempUserId,
+        createUser: tempUserId,
       },
     })
 
-    // 作成ユーザーと更新ユーザーを更新
+    // 自動採番後にユーザーIDを更新
     await prisma.user.update({
-      where: { id: userEntity.id },
+      where: { id: createUser.id },
       data: {
-        createUser: userEntity.id,
-        updateUser: userEntity.id,
+        createUser: createUser.id,
+        updateUser: createUser.id,
       },
     })
   }
