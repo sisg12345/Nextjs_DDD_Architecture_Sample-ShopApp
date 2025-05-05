@@ -48,6 +48,7 @@ export default function AddCart({ product, routeInfo }: AddCartProps) {
   return (
     <Button
       $width={{ base: '100%', md: '400px' }}
+      $marginTop={{ base: 2, md: 0 }}
       $height="66px"
       onClick={() => handleAddToCartButtonClick(product.id)}
     >
